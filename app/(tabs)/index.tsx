@@ -1,75 +1,112 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import supabase from '@/lib/supabase';
+import { Colors } from '@/constants/Colors';
+import { addItemToDraftOrder } from '@/lib/orders';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Alert } from 'react-native';
 
-export default function HomeScreen() {
+type Item = {
+  id: string;
+  name: string;
+  category: string;
+  price_per_day: number;
+  image_url: string | null;
+  available_qty: number;
+};
+
+export default function BrowseScreen() {
+  const [query, setQuery] = useState('');
+  const [items, setItems] = useState<Item[]>([]);
+  const colorScheme = useColorScheme();
+
+  async function loadItems() {
+    let q = supabase.from('items').select('*').order('name');
+    if (query.trim().length > 0) {
+      q = q.ilike('name', `%${query}%`);
+    }
+    const { data } = await q;
+    setItems((data as Item[]) ?? []);
+  }
+
+  useEffect(() => {
+    loadItems();
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <ThemedView style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <Image source={require('@/assets/images/ALYVON logo.png')} style={{ width: 200, height: 64, resizeMode: 'contain' }} />
+        <TextInput
+          placeholder="Search items"
+          value={query}
+          onChangeText={setQuery}
+          onSubmitEditing={loadItems}
+          style={styles.search}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+      <FlatList
+        contentContainerStyle={styles.grid}
+        numColumns={2}
+        data={items}
+        keyExtractor={(i) => i.id}
+        renderItem={({ item }) => (
+          <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? Colors.dark.card : '#FFFFFF' }]}>
+            {item.image_url ? (
+              <Image source={{ uri: item.image_url }} style={styles.cardImage} />
+            ) : (
+              <View style={[styles.cardImage, styles.cardImagePlaceholder]}>
+                <ThemedText style={{ color: '#9CA3AF' }}>No Image</ThemedText>
+              </View>
+            )}
+            <ThemedText type="subtitle" numberOfLines={1}>{item.name}</ThemedText>
+            <ThemedText>{item.category}</ThemedText>
+            <ThemedText>${item.price_per_day?.toFixed(2)}/day</ThemedText>
+            <Pressable style={[styles.button, { backgroundColor: Colors[colorScheme ?? 'light'].tint }]} onPress={async () => {
+              try {
+                await addItemToDraftOrder(item.id);
+                Alert.alert('Added to cart', `${item.name} added to your cart!`);
+              } catch (err: any) {
+                console.error('Add to order failed:', err);
+                Alert.alert('Error', 'Failed to add item to cart. Please try again.');
+              }
+            }}>
+              <ThemedText style={{ color: 'white', textAlign: 'center', fontWeight: '600' }}>Add to order</ThemedText>
+            </Pressable>
+          </View>
+        )}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  header: { padding: 16, gap: 10 },
+  search: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  grid: { padding: 12, gap: 12 },
+  card: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 12,
+    gap: 6,
+    margin: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  cardImage: { width: '100%', aspectRatio: 1.4, borderRadius: 12, backgroundColor: '#EDF2F7' },
+  cardImagePlaceholder: { alignItems: 'center', justifyContent: 'center' },
+  button: { padding: 10, borderRadius: 10, marginTop: 6 },
 });

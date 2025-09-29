@@ -1,4 +1,3 @@
-import { MapView, Marker } from '@/components/PlatformMapView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -63,14 +62,19 @@ export default function TrackScreen() {
     <ThemedView style={{ flex: 1 }}>
       {selected ? (
         <View style={{ flex: 1 }}>
-          <MapView
-            style={{ flex: 1 }}
-            initialRegion={{ latitude: managerCoord?.latitude ?? 5.6037, longitude: managerCoord?.longitude ?? -0.1870, latitudeDelta: 0.2, longitudeDelta: 0.2 }}
-          >
-            {selected.assigned_to && managerCoord && (
-              <Marker coordinate={managerCoord} title={`Manager`} description={`Live location`} />
+          <View style={styles.webMapFallback}>
+            <ThemedText style={styles.webMapText}>
+              Map view is not available on web
+            </ThemedText>
+            <ThemedText style={styles.webMapSubtext}>
+              Please use the mobile app for full map functionality
+            </ThemedText>
+            {managerCoord && (
+              <ThemedText style={styles.coordText}>
+                Manager Location: {managerCoord.latitude.toFixed(4)}, {managerCoord.longitude.toFixed(4)}
+              </ThemedText>
             )}
-          </MapView>
+          </View>
           <Pressable style={{ position: 'absolute', top: 16, left: 16, backgroundColor: '#00000088', padding: 10, borderRadius: 10 }} onPress={() => setSelected(null)}>
             <ThemedText style={{ color: 'white' }}>Back</ThemedText>
           </Pressable>
@@ -96,7 +100,30 @@ export default function TrackScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: 16, gap: 12 },
-  card: { padding: 16, borderRadius: 14, borderWidth: 1, borderColor: 'rgba(148,163,184,0.25)' },
+  card: { padding: 16, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(148,163,184,0.25)' },
+  webMapFallback: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  webMapText: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  webMapSubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    opacity: 0.7,
+    marginBottom: 16,
+  },
+  coordText: {
+    fontSize: 12,
+    textAlign: 'center',
+    opacity: 0.6,
+  },
 });
-
 

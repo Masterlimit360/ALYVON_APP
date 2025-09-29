@@ -19,9 +19,14 @@ export default function RootLayout() {
   // Basic session gate: if not authenticated, push to auth stack
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        router.replace('/auth/sign-in');
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          router.replace('/auth/sign-in');
+        }
+      } catch (error) {
+        console.warn('Supabase connection failed:', error);
+        // Continue without authentication for now
       }
     })();
   }, []);

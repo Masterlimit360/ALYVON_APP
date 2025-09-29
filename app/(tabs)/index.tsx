@@ -23,12 +23,17 @@ export default function BrowseScreen() {
   const colorScheme = useColorScheme();
 
   async function loadItems() {
-    let q = supabase.from('items').select('*').order('name');
-    if (query.trim().length > 0) {
-      q = q.ilike('name', `%${query}%`);
+    try {
+      let q = supabase.from('items').select('*').order('name');
+      if (query.trim().length > 0) {
+        q = q.ilike('name', `%${query}%`);
+      }
+      const { data } = await q;
+      setItems((data as Item[]) ?? []);
+    } catch (error) {
+      console.warn('Failed to load items:', error);
+      setItems([]);
     }
-    const { data } = await q;
-    setItems((data as Item[]) ?? []);
   }
 
   useEffect(() => {
@@ -38,7 +43,7 @@ export default function BrowseScreen() {
   return (
     <ThemedView style={{ flex: 1 }}>
       <View style={styles.header}>
-        <Image source={require('@/assets/images/ALYVON logo.png')} style={{ width: 200, height: 64, resizeMode: 'contain' }} />
+        <Image source={require('@/assets/images/ALYVON-logo.png')} style={{ width: 200, height: 64, resizeMode: 'contain' }} />
         <TextInput
           placeholder="Search items"
           value={query}

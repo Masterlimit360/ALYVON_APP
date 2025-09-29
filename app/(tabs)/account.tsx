@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, View, TextInput } from 'react-native';
-import { Image } from 'expo-image';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import supabase from '@/lib/supabase';
-import { router } from 'expo-router';
-import { Link } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
 import { getCurrentProfile, updateProfile, uploadToBucket } from '@/lib/profile';
+import supabase from '@/lib/supabase';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { Link, router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Alert, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 export default function AccountScreen() {
   const [email, setEmail] = useState<string | null>(null);
@@ -39,7 +38,7 @@ export default function AccountScreen() {
   return (
     <ThemedView style={styles.container}>
       <Image 
-        source={coverUrl || require('@/assets/images/ALYVON logo.png')} 
+        source={coverUrl || require('@/assets/images/ALYVON-logo.png')} 
         style={styles.cover}
         cachePolicy="none"
         onLoad={() => console.log('Cover image loaded:', coverUrl)}
@@ -74,7 +73,7 @@ export default function AccountScreen() {
         }
       }}>
         <Image 
-          source={avatarUrl || require('@/assets/images/ALYVON logo.png')} 
+          source={avatarUrl || require('@/assets/images/ALYVON-logo.png')} 
           style={styles.avatar}
           cachePolicy="none"
           onLoad={() => console.log('Avatar image loaded:', avatarUrl)}

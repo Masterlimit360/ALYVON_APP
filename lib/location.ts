@@ -1,5 +1,5 @@
-import * as Location from 'expo-location';
 import supabase from '@/lib/supabase';
+import { Location } from './platformLocation';
 
 export async function requestLocationPermission() {
   const { status } = await Location.requestForegroundPermissionsAsync();

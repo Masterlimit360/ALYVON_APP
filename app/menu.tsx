@@ -1,11 +1,10 @@
+import { ThemedText } from '@/components/ThemedText';
+import { getCurrentProfile } from '@/lib/profile';
+import supabase from '@/lib/supabase';
+import { Image } from 'expo-image';
+import { Link, router, useFocusEffect } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { Image } from 'expo-image';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { getCurrentProfile } from '@/lib/profile';
-import { Link, router, useFocusEffect } from 'expo-router';
-import supabase from '@/lib/supabase';
 
 export default function MenuScreen() {
   const [profile, setProfile] = useState<any>(null);
@@ -40,13 +39,13 @@ export default function MenuScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Image 
-          source={profile?.cover_url || require('@/assets/images/ALYVON logo.png')} 
+          source={profile?.cover_url || require('@/assets/images/ALYVON-logo.png')} 
           style={styles.cover}
           cachePolicy="none"
           onError={(error) => console.log('Menu cover image error:', error)}
         />
         <Image 
-          source={profile?.avatar_url || require('@/assets/images/ALYVON logo.png')} 
+          source={profile?.avatar_url || require('@/assets/images/ALYVON-logo.png')} 
           style={styles.avatar}
           cachePolicy="none"
           onError={(error) => console.log('Menu avatar image error:', error)}

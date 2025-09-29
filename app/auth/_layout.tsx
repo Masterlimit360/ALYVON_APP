@@ -1,7 +1,7 @@
+import { Colors } from '@/constants/Colors';
 import { Stack } from 'expo-router';
 import React from 'react';
 import { Image, View } from 'react-native';
-import { Colors } from '@/constants/Colors';
 
 export default function AuthLayout() {
   return (
@@ -12,7 +12,7 @@ export default function AuthLayout() {
         headerTitle: () => (
           <View style={{ alignItems: 'center' }}>
             <Image
-              source={require('@/assets/images/ALYVON logo.png')}
+              source={require('@/assets/images/ALYVON-logo.png')}
               style={{ width: 220, height: 74, resizeMode: 'contain' }}
             />
           </View>

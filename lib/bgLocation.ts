@@ -1,6 +1,5 @@
-import * as TaskManager from 'expo-task-manager';
-import * as Location from 'expo-location';
 import supabase from '@/lib/supabase';
+import { Location, TaskManager } from './platformLocation';
 
 export const BG_LOCATION_TASK = 'ALYVON_BACKGROUND_LOCATION_TASK';
 
